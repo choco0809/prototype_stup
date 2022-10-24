@@ -74,5 +74,7 @@ group :test do
   gem "webdrivers"
 end
 
-gem 'slim-rails'
-gem 'html2slim'
+gem "slim-rails"
+gem "html2slim"
+gem "omniauth-discord"
+gem "omniauth-rails_csrf_protection"
