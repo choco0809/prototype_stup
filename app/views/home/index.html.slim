@@ -1,4 +1,4 @@
 - if current_user
-  == render "home/header"
+  = render 'shared/header'
 - else
-  == render "welcome/welcome"
+  = render 'welcome/welcome'
