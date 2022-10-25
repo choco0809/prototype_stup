@@ -1,0 +1,9 @@
+header
+  .w-full.h-12.flex.bg-red-300
+    div.text-black
+      p
+        | ヘッダー作成予定
+    div
+      = image_tag current_user.image, size: '35x35'
+    div.text-black
+      = link_to "ログアウト", log_out_path
