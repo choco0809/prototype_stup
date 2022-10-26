@@ -3,17 +3,13 @@ module.exports = {
     './app/views/**/*.html.slim',
     './app/helpers/**/*.rb',
     './app/assets/stylesheets/**/*.css',
-    './app/javascript/**/*.js'
+    './app/javascript/**/*.js',
+    './app/javascript/**/*.vue'
   ],
-  themes: [{
-    color: {
-      'base': '#FFF'
-    }
-  }],
   plugins: [require('daisyui')],
   daisyui: {
     themes: [{
-      stup: {
+      color: {
         'base': '#FFF',
       }
     }, "cupcake"]
