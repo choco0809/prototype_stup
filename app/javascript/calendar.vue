@@ -1,6 +1,8 @@
 <template>
   <div class="text-black">
+    <div @click="oldMonth">前月</div>
     <div>{{ calendarYear }}年{{ calendarMonth }}月</div>
+    <div>翌月</div>
     <table>
       <thead>
         <tr class="bg-slate-200">
@@ -94,6 +96,14 @@ export default {
     // 現在の月（yyyy）を取得
     getCurrentMonth() {
       return new Date().getMonth() + 1
+    },
+    oldMonth() {
+      if (this.calendarMonth -- == 1){
+        this.calendarYear = this.calendarYear --
+        this.calendarMonth = 12
+      } else {
+        this.calendarMonth = this.calendarMonth --
+      }
     }
   }
 }
