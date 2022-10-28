@@ -1,8 +1,8 @@
 <template>
   <div class="text-black">
-    <div @click="oldMonth">前月</div>
+    <div @click="previousMonth">前月</div>
     <div>{{ calendarYear }}年{{ calendarMonth }}月</div>
-    <div>翌月</div>
+    <div @click="nextMonth">翌月</div>
     <table>
       <thead>
         <tr class="bg-slate-200">
@@ -19,7 +19,7 @@
         <tr>
           <td v-for="date in week.value" :key="date.weekDay" class="border border-black w-max bg-slate-100">
             <div class="text-center"> {{ date.date }} </div>
-            <div v-if="date.date"> hh:mm </div>
+            <div v-if="date.date">  </div>
           </td>
         </tr>
       </tbody>
@@ -88,6 +88,20 @@ export default {
   },
   methods: {
     loadState() {
+      const params = new URLSearchParams(location.search)
+      const yearMonth = params.get('calendar') || ''
+      const match = /(\d{4})-(\d{2})/.exec(yearMonth)
+      if (!match) {
+        return
+      }
+      const year = parseInt(match[1])
+      const month = parseInt(match[2])
+      if (new Date(year, month).getTime() > Date.now()) {
+        return
+      }
+
+      this.calendarYear = year
+      this.calendarMonth = month
     },
     // 現在の年（yyyy）を取得
     getCurrentYear() {
@@ -97,13 +111,31 @@ export default {
     getCurrentMonth() {
       return new Date().getMonth() + 1
     },
-    oldMonth() {
-      if (this.calendarMonth -- == 1){
-        this.calendarYear = this.calendarYear --
+    previousMonth() {
+      if (this.calendarMonth === 1){
         this.calendarMonth = 12
+        this.calendarYear --
       } else {
-        this.calendarMonth = this.calendarMonth --
+        this.calendarMonth --
       }
+      this.saveState()
+    },
+    nextMonth() {
+      if (this.calendarMonth === 12){
+        this.calendarMonth = 1
+        this.calendarYear ++
+      } else {
+        this.calendarMonth ++
+      }
+      this.saveState()
+    },
+    saveState() {
+      const year = String(this.calendarYear)
+      const month = String(this.calendarMonth).padStart(2, '0')
+      const params = new URLSearchParams(location.search)
+      params.set('calendar', `${year}-${month}`)
+      // urlにパラメーターを作成する
+      history.replaceState(history.state, '', `?${params}${location.hash}`)
     }
   }
 }
