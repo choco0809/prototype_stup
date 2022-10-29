@@ -88,6 +88,14 @@ export default {
       })
       return weeksAry
     },
+    // 当月のみの学習時間に絞り込む
+    calendarStudyTime() {
+      return this.studyTimeRecords.filter((record) =>
+          record.start_at.includes(
+              `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}`
+          )
+      )
+    },
     calendarDates() {
       const calendar = []
       if (this.firstWday > 0) {
@@ -97,8 +105,9 @@ export default {
       }
       for (let date = 1; date <= this.lastDate; date++) {
         // 学習記録と日付がおんなじ場合のみ、合計学習時間用の値をpushする
-        const result = this.studyTimeRecords.find(
-            element => element.id === date
+        console.log(this.studyTimeRecords)
+        const result = this.calendarStudyTime.find(
+            element => this.getDate(element.start_at) === date
         )
         if (result) {
           calendar.push({ date : date, totalTIme: this.diffTime(result.start_at, result.end_at) })
@@ -140,6 +149,9 @@ export default {
       const meta = document.querySelector('meta[name="csrf-token"]')
       return meta ? meta.getAttribute('content') : ''
     },
+    formatMonth(month) {
+      return month.toString().padStart(2, '0')
+    },
     // 現在の年（yyyy）を取得
     getCurrentYear() {
       return new Date().getFullYear()
@@ -178,6 +190,9 @@ export default {
       const date1 = new Date(start_at)
       const date2 = new Date(end_at)
       return ((date2.getTime() - date1.getTime()) / (60 * 1000))
+    },
+    getDate(date) {
+      return Number(date.substring(8, 10))
     }
   }
 }
