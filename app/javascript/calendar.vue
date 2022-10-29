@@ -17,10 +17,10 @@
       </thead>
       <tbody v-for="week in calendarWeeks" :key="week.id">
         <tr>
-          <td v-for="date in week.value" :key="date.weekDay" class="border border-black w-max bg-slate-100 h-12">
+          <td v-for="date in week.value" :key="date.weekDay" class="border border-black w-96 bg-slate-100 h-12">
             <div v-if="date.date" class="text-center"> {{ date.date }} </div>
             <div v-else></div>
-            <div v-if="date.totalTIme" class="text-center"> ● </div>
+            <div v-if="date.totalTIme" class="text-center"> {{ date.totalTIme }}分</div>
             <div v-else-if="date.date" class="text-center"> ー </div>
           </td>
         </tr>
@@ -104,13 +104,15 @@ export default {
         }
       }
       for (let date = 1; date <= this.lastDate; date++) {
-        // 学習記録と日付がおんなじ場合のみ、合計学習時間用の値をpushする
-        console.log(this.studyTimeRecords)
-        const result = this.calendarStudyTime.find(
-            element => this.getDate(element.start_at) === date
+        // 対応する日付の学習記録を配列にいれる
+        const result = this.calendarStudyTime.filter((records) =>
+          records.end_at?.includes(
+              `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}-${this.formatDay(date)}`
+            )
         )
         if (result) {
-          calendar.push({ date : date, totalTIme: this.diffTime(result.start_at, result.end_at) })
+          // calendar.push({ date : date, totalTIme: this.diffTime(result.start_at, result.end_at) })
+          calendar.push({ date : date, totalTIme: this.sumStudyTime(result) })
         } else {
           calendar.push({ date: date })
         }
@@ -148,6 +150,9 @@ export default {
     token() {
       const meta = document.querySelector('meta[name="csrf-token"]')
       return meta ? meta.getAttribute('content') : ''
+    },
+    formatDay(day) {
+      return day.toString().padStart(2, '0')
     },
     formatMonth(month) {
       return month.toString().padStart(2, '0')
@@ -191,8 +196,15 @@ export default {
       const date2 = new Date(end_at)
       return ((date2.getTime() - date1.getTime()) / (60 * 1000))
     },
-    getDate(date) {
-      return Number(date.substring(8, 10))
+    sumStudyTime(records) {
+      let totalTime = 0
+      const totalTimeRecords = records.map((record) =>
+        this.diffTime(record.start_at, record.end_at)
+      )
+      if (totalTimeRecords.length != 0) {
+        totalTime = totalTimeRecords.reduce((previousValue, currentValue) => previousValue + currentValue)
+      }
+      return totalTime
     }
   }
 }
