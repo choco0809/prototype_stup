@@ -1,5 +1,5 @@
 - if current_user
   = render 'shared/header'
-  div#calendar value = 'フィヨルドブートキャンプ'
+  div#calendar value = current_user.id
 - else
   = render 'welcome/welcome'
