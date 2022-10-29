@@ -4,5 +4,9 @@ Rails.application.routes.draw do
   get 'auth/failure', to: redirect('/')
   get 'log_out', to: 'sessions#destroy', as: 'log_out'
 
+  namespace :api, {format: 'json'} do
+    resources :calendar, only: %i[show]
+  end
+
   resources :sessions, only: %i[create destroy]
 end

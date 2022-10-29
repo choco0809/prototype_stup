@@ -3,7 +3,7 @@
     <div @click="previousMonth">前月</div>
     <div>{{ calendarYear }}年{{ calendarMonth }}月</div>
     <div @click="nextMonth">翌月</div>
-    <table>
+    <table class="w-96">
       <thead>
         <tr class="bg-slate-200">
           <th class = "border border-black">日</th>
@@ -17,9 +17,11 @@
       </thead>
       <tbody v-for="week in calendarWeeks" :key="week.id">
         <tr>
-          <td v-for="date in week.value" :key="date.weekDay" class="border border-black w-max bg-slate-100">
-            <div class="text-center"> {{ date.date }} </div>
-            <div v-if="date.date">  </div>
+          <td v-for="date in week.value" :key="date.weekDay" class="border border-black w-max bg-slate-100 h-12">
+            <div v-if="date.date" class="text-center"> {{ date.date }} </div>
+            <div v-else></div>
+            <div v-if="date.totalTIme" class="text-center"> ● </div>
+            <div v-else-if="date.date" class="text-center"> ー </div>
           </td>
         </tr>
       </tbody>
@@ -30,14 +32,37 @@
 <script>
 export default {
   name: "calendar",
+  props: {
+    userId: { type: String, required: true }
+  },
   data() {
     return {
+      studyTimeRecords:[],
       calendarYear: this.getCurrentYear(),
       calendarMonth: this.getCurrentMonth()
     }
   },
   mounted() {
     this.loadState()
+    fetch(`/api/calendar/${this.userId}.json`, {
+      method: 'GET',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-Token': this.token()
+      },
+      credentials: 'same-origin'
+    })
+        .then((response) => {
+          return response.json()
+        })
+        .then((json) => {
+          json.forEach((r) => {
+            this.studyTimeRecords.push(r)
+          })
+        })
+        .catch((error) => {
+          console.warn(error)
+        })
   },
   computed: {
     calendarWeeks() {
@@ -63,6 +88,14 @@ export default {
       })
       return weeksAry
     },
+    // 当月のみの学習時間に絞り込む
+    calendarStudyTime() {
+      return this.studyTimeRecords.filter((record) =>
+          record.start_at.includes(
+              `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}`
+          )
+      )
+    },
     calendarDates() {
       const calendar = []
       if (this.firstWday > 0) {
@@ -71,7 +104,16 @@ export default {
         }
       }
       for (let date = 1; date <= this.lastDate; date++) {
-        calendar.push({ date: date })
+        // 学習記録と日付がおんなじ場合のみ、合計学習時間用の値をpushする
+        console.log(this.studyTimeRecords)
+        const result = this.calendarStudyTime.find(
+            element => this.getDate(element.start_at) === date
+        )
+        if (result) {
+          calendar.push({ date : date, totalTIme: this.diffTime(result.start_at, result.end_at) })
+        } else {
+          calendar.push({ date: date })
+        }
       }
       return calendar
     },
@@ -102,6 +144,13 @@ export default {
 
       this.calendarYear = year
       this.calendarMonth = month
+    },
+    token() {
+      const meta = document.querySelector('meta[name="csrf-token"]')
+      return meta ? meta.getAttribute('content') : ''
+    },
+    formatMonth(month) {
+      return month.toString().padStart(2, '0')
     },
     // 現在の年（yyyy）を取得
     getCurrentYear() {
@@ -136,6 +185,14 @@ export default {
       params.set('calendar', `${year}-${month}`)
       // urlにパラメーターを作成する
       history.replaceState(history.state, '', `?${params}${location.hash}`)
+    },
+    diffTime(start_at, end_at) {
+      const date1 = new Date(start_at)
+      const date2 = new Date(end_at)
+      return ((date2.getTime() - date1.getTime()) / (60 * 1000))
+    },
+    getDate(date) {
+      return Number(date.substring(8, 10))
     }
   }
 }
