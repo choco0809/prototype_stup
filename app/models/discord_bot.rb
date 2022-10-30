@@ -8,7 +8,7 @@ class DiscordBot
     @bot.command :s, description: '学習時間の記録を開始します。' do |event|
       user = User.find_by(uid: event.user.id)
       @records = StudyTimeRecord.where(user_id: user.id)
-      @start_time = Time.now
+      @start_time = Time.now.strftime("%Y-%m-%d %H:%M")
       if user.nil?
         event.respond "ユーザーが登録されていません。"
       else
@@ -29,7 +29,7 @@ class DiscordBot
     @bot.command :e, description: '学習時間の記録を終了します。' do |event|
       user = User.find_by(uid: event.user.id)
       @records = StudyTimeRecord.where(user_id: user.id)
-      @end_time = Time.now
+      @end_time = Time.now.strftime("%Y-%m-%d %H:%M")
       if @records.last.end_at.nil?
         user.study_time_records.update(end_at: @start_time)
         event.respond "学習を終了しました。#{@end_time}"
