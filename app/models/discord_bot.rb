@@ -9,15 +9,19 @@ class DiscordBot
       user = User.find_by(uid: event.user.id)
       @records = StudyTimeRecord.where(user_id: user.id)
       @start_time = Time.now
-      if @records.empty?
-        user.study_time_records.create(start_at: @start_time)
-        event.respond "学習を開始しました。#{@start_time}"
+      if user.nil?
+        event.respond "ユーザーが登録されていません。"
       else
-        if @records.last.end_at.nil?
-          event.respond "前回の学習が終了していません。"
-        else
+        if @records.empty?
           user.study_time_records.create(start_at: @start_time)
           event.respond "学習を開始しました。#{@start_time}"
+        else
+          if @records.last.end_at.nil?
+            event.respond "前回の学習が終了していません。"
+          else
+            user.study_time_records.create(start_at: @start_time)
+            event.respond "学習を開始しました。#{@start_time}"
+          end
         end
       end
     end
