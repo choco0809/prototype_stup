@@ -34,7 +34,7 @@ class DiscordBot
         @records = StudyTimeRecord.where(user_id: user.id)
         @end_time = Time.now.strftime("%Y-%m-%d %H:%M")
         if @records.last.end_at.nil?
-          user.study_time_records.last.update(end_at: @start_time)
+          user.study_time_records.last.update(end_at: @end_time)
           event.respond "学習を終了しました。#{@end_time}"
         else
           event.respond '学習が開始されていません。'
