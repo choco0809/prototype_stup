@@ -1,5 +1,7 @@
 - if current_user
   = render 'shared/header'
-  div#calendar value = current_user.id
+  div.flex.justify-center
+    div#calendar.mx-5 value = current_user.id
+    div#chart.mx-5
 - else
   = render 'welcome/welcome'
