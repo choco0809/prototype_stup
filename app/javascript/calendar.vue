@@ -1,31 +1,39 @@
 <template>
-  <div class="text-black">
-    <div @click="previousMonth">前月</div>
-    <div>{{ calendarYear }}年{{ calendarMonth }}月</div>
-    <div @click="nextMonth">翌月</div>
-    <table class="w-96">
-      <thead>
-        <tr class="bg-slate-200">
-          <th class = "border border-black">日</th>
-          <th class = "border border-black">月</th>
-          <th class = "border border-black">火</th>
-          <th class = "border border-black">水</th>
-          <th class = "border border-black">木</th>
-          <th class = "border border-black">金</th>
-          <th class = "border border-black">土</th>
-        </tr>
-      </thead>
-      <tbody v-for="week in calendarWeeks" :key="week.id">
-        <tr>
-          <td v-for="date in week.value" :key="date.weekDay" class="border border-black w-96 bg-slate-100 h-12">
-            <div v-if="date.date" class="text-center"> {{ date.date }} </div>
-            <div v-else></div>
-            <div v-if="date.totalTIme" class="text-center"> {{ date.totalTIme }}分</div>
-            <div v-else-if="date.date" class="text-center"> ー </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="my-6 flex justify-center text-black">
+    <div class="w-96 mt-6">
+      <div class="flex justify-center text-black text-2xl">
+        <div class="w-14 h-11 px-5 text-center" @click="previousMonth">＜</div>
+        <div class="w-36 h-11 text-center">{{ calendarYear }}年{{ calendarMonth }}月</div>
+        <div class="w-14 h-11 px-5 text-center" @click="nextMonth">＞</div>
+      </div>
+      <div class="text-black">
+        <table class="w-full">
+          <thead>
+          <tr class="bg-slate-200">
+            <th class = "border border-black w-1/7">日</th>
+            <th class = "border border-black w-1/7">月</th>
+            <th class = "border border-black w-1/7">火</th>
+            <th class = "border border-black w-1/7">水</th>
+            <th class = "border border-black w-1/7">木</th>
+            <th class = "border border-black w-1/7">金</th>
+            <th class = "border border-black w-1/7">土</th>
+          </tr>
+          </thead>
+          <tbody v-for="week in calendarWeeks" :key="week.id">
+          <tr>
+            <td v-for="date in week.value" :key="date.weekDay" class="border border-black bg-slate-100 h-20">
+              <div v-if="date.date" class="text-center"> {{ date.date }} </div>
+              <div v-else></div>
+              <div v-if="date.totalTIme" class="text-center"> {{ date.totalTIme }}分</div>
+              <div v-else-if="date.date" class="text-center"> ー </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="h-11">
+      </div>
+    </div>
   </div>
 </template>
 
