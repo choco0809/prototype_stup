@@ -74,13 +74,9 @@ export default {
   },
   computed: {
     calendarWeeks() {
-      // 最終的にreturnする配列
       const weeksAry = []
-      // 日付と曜日を格納する配列
       let value = []
-      // 第何周目かを定める値
       let id = 1
-      // 曜日を定める値　（ex）0は日曜日
       let weekDay = 0
       this.calendarDates.forEach(function (date, i, ary) {
         !date ? (date = { weekDay: weekDay }) : (date.weekDay = weekDay)
@@ -96,7 +92,6 @@ export default {
       })
       return weeksAry
     },
-    // 当月のみの学習時間に絞り込む
     calendarStudyTime() {
       return this.studyTimeRecords.filter((record) =>
           record.start_at.includes(
@@ -106,6 +101,7 @@ export default {
     },
     calendarDates() {
       const calendar = []
+      const monthlyStudyTimeRecords = []
       if (this.firstWday > 0) {
         for (let blank = 0; blank < this.firstWday; blank++) {
           calendar.push(null)
@@ -121,10 +117,12 @@ export default {
         if (result) {
           // calendar.push({ date : date, totalTIme: this.diffTime(result.start_at, result.end_at) })
           calendar.push({ date : date, totalTIme: this.sumStudyTime(result) })
+          monthlyStudyTimeRecords.push(this.sumStudyTime(result))
         } else {
           calendar.push({ date: date })
         }
       }
+      this.$store.commit('updateStudyTimes', { studyTimes: monthlyStudyTimeRecords })
       return calendar
     },
     firstWday() {
@@ -152,6 +150,8 @@ export default {
         return
       }
 
+      this.$store.commit('updateCalendarYear', { year: year  })
+      this.$store.commit('updateCalendarMonth', { month: month })
       this.calendarYear = year
       this.calendarMonth = month
     },
@@ -165,29 +165,35 @@ export default {
     formatMonth(month) {
       return month.toString().padStart(2, '0')
     },
-    // 現在の年（yyyy）を取得
     getCurrentYear() {
-      return new Date().getFullYear()
+      this.$store.commit('updateCalendarYear', { year: new Date().getFullYear()  })
+      return this.$store.getters.calendarYear
     },
-    // 現在の月（yyyy）を取得
     getCurrentMonth() {
-      return new Date().getMonth() + 1
+      this.$store.commit('updateCalendarMonth', { month: new Date().getMonth() + 1 })
+      return this.$store.getters.calendarMonth
     },
     previousMonth() {
       if (this.calendarMonth === 1){
-        this.calendarMonth = 12
-        this.calendarYear --
+        this.$store.commit('updateCalendarMonth', { month: 12 })
+        this.$store.commit('updateCalendarYear', { year: this.calendarYear - 1  })
+        this.calendarMonth = this.$store.getters.calendarMonth
+        this.calendarYear = this.$store.getters.calendarYear
       } else {
-        this.calendarMonth --
+        this.$store.commit('updateCalendarMonth', { month: this.calendarMonth - 1 })
+        this.calendarMonth = this.$store.getters.calendarMonth
       }
       this.saveState()
     },
     nextMonth() {
       if (this.calendarMonth === 12){
-        this.calendarMonth = 1
-        this.calendarYear ++
+        this.$store.commit('updateCalendarMonth', { month: 1 })
+        this.$store.commit('updateCalendarYear', { year: this.calendarYear + 1  })
+        this.calendarMonth = this.$store.getters.calendarMonth
+        this.calendarYear = this.$store.getters.calendarYear
       } else {
-        this.calendarMonth ++
+        this.$store.commit('updateCalendarMonth', { month: this.calendarMonth + 1  })
+        this.calendarMonth = this.$store.getters.calendarMonth
       }
       this.saveState()
     },
@@ -196,7 +202,6 @@ export default {
       const month = String(this.calendarMonth).padStart(2, '0')
       const params = new URLSearchParams(location.search)
       params.set('calendar', `${year}-${month}`)
-      // urlにパラメーターを作成する
       history.replaceState(history.state, '', `?${params}${location.hash}`)
     },
     diffTime(start_at, end_at) {
