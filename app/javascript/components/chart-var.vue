@@ -26,7 +26,7 @@ export default {
           {
             label: '2022年11月',
             backgroundColor: '#f87979',
-            data: [360, 50]
+            data: []
           }
         ]
       },
@@ -53,18 +53,35 @@ export default {
   },
   beforeMount() {
     // mountedで値を取得した場合、描写が遅くなる
-    console.log("#beforeMount")
     this.chartData.labels = this.calendarDates()
   },
   mounted() {
+    // calendarMonthが変わるたびに棒グラフを再作成する
+    this.$store.watch(
+        (state, getters) => getters.calendarMonth,
+        (newVal, oldVal) => {
+          this.calendarYear = this.getCurrentYear()
+          this.calendarMonth = this.getCurrentMonth()
+          this.chartData.labels = this.calendarDates()
+      }
+    )
+    this.$store.watch(
+        (state, getters) => getters.studyTimeRecords,
+        (newVal, oldVal) => {
+          this.chartData.datasets[0].data = this.getCurrentStudyTimeRecords()
+        }
+    )
     this.loadState()
   },
   methods: {
     getCurrentYear() {
-      return new Date().getFullYear()
+      return this.$store.getters.calendarYear
     },
     getCurrentMonth() {
-      return new Date().getMonth() + 1
+      return this.$store.getters.calendarMonth
+    },
+    getCurrentStudyTimeRecords() {
+      return this.$store.getters.studyTimeRecords
     },
     calendarDates() {
       const calendar = []
