@@ -41,6 +41,15 @@ export default {
               maxRotation: 0,
               minRotation: 0
             }
+          },
+          y: {
+            min: 0,
+            ticks: {
+              stepSize: 1,
+              callback: function (tick) {
+                return tick.toString() + 'h';
+              }
+            }
           }
         },
         plugins: {

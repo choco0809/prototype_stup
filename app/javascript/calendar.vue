@@ -25,17 +25,15 @@
               <div v-if="date.date" class="text-center"> {{ date.date }} </div>
               <div v-else></div>
               <div v-if="date.totalTIme" class="text-center">
-                <label for="my-modal-3" class="btn btn-link text-black">{{ date }}分</label>
+                <label for="my-modal-3" class="btn btn-link text-black">{{ date.totalTIme }}分</label>
                 <input type="checkbox" id="my-modal-3" class="modal-toggle" />
                 <div class="modal">
                   <div class="modal-box relative w-11/12 max-w-5xl">
                     <label for="my-modal-3" class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
-                    <h3 class="text-lg font-bold">{{ calendarYear }}年{{ calendarMonth }}月{{ date }}日の学習記録</h3>
+                    <h3 class="text-lg font-bold">{{ calendarYear }}年{{ calendarMonth }}月{{ date.date }}日の学習記録</h3>
                     <table>
                       <tbody>
                         <tr>
-                          <td>19:15</td>
-                          <td>20:15</td>
                         </tr>
                       </tbody>
                     </table>
@@ -134,7 +132,7 @@ export default {
         if (result) {
           // calendar.push({ date : date, totalTIme: this.diffTime(result.start_at, result.end_at) })
           calendar.push({ date : date, totalTIme: this.sumStudyTime(result) })
-          monthlyStudyTimeRecords.push(this.sumStudyTime(result))
+          monthlyStudyTimeRecords.push((this.sumStudyTime(result) / 60))
         } else {
           calendar.push({ date: date })
         }
