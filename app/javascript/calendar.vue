@@ -25,15 +25,23 @@
               <div v-if="date.date" class="text-center"> {{ date.date }} </div>
               <div v-else></div>
               <div v-if="date.totalTIme" class="text-center">
-                <label for="my-modal-3" v-on:click="today = date.date" class="btn btn-link text-black">{{ date.totalTIme }}分</label>
+                <label for="my-modal-3" v-on:click=getToDayStudyTimeRecords(date.date) class="btn btn-link text-black">{{ date.totalTIme }}分</label>
                 <input type="checkbox" id="my-modal-3" class="modal-toggle" />
                 <div class="modal">
-                  <div class="modal-box relative w-11/12 max-w-5xl">
+                  <div class="modal-box relative w-11/12 max-w-5xl ">
                     <label for="my-modal-3" class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
                     <h3 class="text-lg font-bold">{{ calendarYear }}年{{ calendarMonth }}月{{ today }}日の学習記録</h3>
-                    <table>
+                    <table class="w-full">
+                      <thead>
+                        <tr class="bg-slate-200">
+                          <th class="border border-black">開始時刻</th>
+                          <th class="border border-black">終了時刻</th>
+                        </tr>
+                      </thead>
                       <tbody>
-                        <tr>
+                        <tr v-for="date in todayStudyTime" :key="date.id">
+                          <td>{{ date.start_at.slice(0,19) }}</td>
+                          <td>{{ date.end_at.slice(0,19) }}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -114,6 +122,17 @@ export default {
               `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}`
           )
       )
+    },
+    todayStudyTime() {
+      console.log("#todayStudyTime")
+      let arry = []
+      arry = this.studyTimeRecords.filter((record) =>
+          record.start_at.includes(
+              `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}-${this.formatDay(this.today)}`
+          )
+      )
+      console.log(arry)
+      return arry
     },
     calendarDates() {
       const calendar = []
@@ -234,6 +253,14 @@ export default {
         totalTime = totalTimeRecords.reduce((previousValue, currentValue) => previousValue + currentValue)
       }
       return totalTime
+    },
+    getToDayStudyTimeRecords(date) {
+      this.today = date
+      // const result = this.studyTimeRecords.filter((records) =>
+      //     records.end_at?.includes(
+      //         `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}-${this.formatDay(date)}`
+      //     )
+      // )
     }
   }
 }
