@@ -1,6 +1,6 @@
 <template>
   <div class="my-6 flex justify-center text-black">
-    <div class="w-96 mt-6">
+    <div class="md:w-150 mt-6">
       <div class="flex justify-center text-black text-2xl">
         <div class="w-14 h-11 px-5 text-center" @click="previousMonth">＜</div>
         <div class="w-36 h-11 text-center">{{ calendarYear }}年{{ calendarMonth }}月</div>
@@ -21,10 +21,27 @@
           </thead>
           <tbody v-for="week in calendarWeeks" :key="week.id">
           <tr>
-            <td v-for="date in week.value" :key="date.weekDay" class="border border-black bg-slate-100 h-20">
+            <td v-for="date in week.value" :key="date.weekDay" class="border border-black bg-slate-100 h-20 w-20">
               <div v-if="date.date" class="text-center"> {{ date.date }} </div>
               <div v-else></div>
-              <div v-if="date.totalTIme" class="text-center"> {{ date.totalTIme }}分</div>
+              <div v-if="date.totalTIme" class="text-center">
+                <label for="my-modal-3" class="btn btn-link text-black">{{ date }}分</label>
+                <input type="checkbox" id="my-modal-3" class="modal-toggle" />
+                <div class="modal">
+                  <div class="modal-box relative w-11/12 max-w-5xl">
+                    <label for="my-modal-3" class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
+                    <h3 class="text-lg font-bold">{{ calendarYear }}年{{ calendarMonth }}月{{ date }}日の学習記録</h3>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>19:15</td>
+                          <td>20:15</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
               <div v-else-if="date.date" class="text-center"> ー </div>
             </td>
           </tr>
