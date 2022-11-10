@@ -1,6 +1,6 @@
 <template>
   <div class="my-6 flex justify-center text-black">
-    <div class="w-96 mt-6">
+    <div class="md:w-150 mt-6">
       <div class="flex justify-center text-black text-2xl">
         <div class="w-14 h-11 px-5 text-center" @click="previousMonth">＜</div>
         <div class="w-36 h-11 text-center">{{ calendarYear }}年{{ calendarMonth }}月</div>
@@ -21,10 +21,33 @@
           </thead>
           <tbody v-for="week in calendarWeeks" :key="week.id">
           <tr>
-            <td v-for="date in week.value" :key="date.weekDay" class="border border-black bg-slate-100 h-20">
+            <td v-for="date in week.value" :key="date.weekDay" class="border border-black bg-slate-100 h-20 w-20">
               <div v-if="date.date" class="text-center"> {{ date.date }} </div>
               <div v-else></div>
-              <div v-if="date.totalTIme" class="text-center"> {{ date.totalTIme }}分</div>
+              <div v-if="date.totalTIme" class="text-center">
+                <label for="my-modal-3" v-on:click=getToDayStudyTimeRecords(date.date) class="btn btn-link text-black">{{ date.totalTIme }}分</label>
+                <input type="checkbox" id="my-modal-3" class="modal-toggle" />
+                <div class="modal">
+                  <div class="modal-box relative w-11/12 max-w-5xl ">
+                    <label for="my-modal-3" class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
+                    <h3 class="text-lg font-bold">{{ calendarYear }}年{{ calendarMonth }}月{{ today }}日の学習記録</h3>
+                    <table class="w-full">
+                      <thead>
+                        <tr class="bg-slate-200">
+                          <th class="border border-black">開始時刻</th>
+                          <th class="border border-black">終了時刻</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="date in todayStudyTime" :key="date.id">
+                          <td>{{ date.start_at.slice(0,19) }}</td>
+                          <td>{{ date.end_at.slice(0,19) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
               <div v-else-if="date.date" class="text-center"> ー </div>
             </td>
           </tr>
@@ -45,6 +68,7 @@ export default {
   },
   data() {
     return {
+      today: '',
       studyTimeRecords:[],
       calendarYear: this.getCurrentYear(),
       calendarMonth: this.getCurrentMonth()
@@ -99,6 +123,17 @@ export default {
           )
       )
     },
+    todayStudyTime() {
+      console.log("#todayStudyTime")
+      let arry = []
+      arry = this.studyTimeRecords.filter((record) =>
+          record.start_at.includes(
+              `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}-${this.formatDay(this.today)}`
+          )
+      )
+      console.log(arry)
+      return arry
+    },
     calendarDates() {
       const calendar = []
       const monthlyStudyTimeRecords = []
@@ -117,7 +152,7 @@ export default {
         if (result) {
           // calendar.push({ date : date, totalTIme: this.diffTime(result.start_at, result.end_at) })
           calendar.push({ date : date, totalTIme: this.sumStudyTime(result) })
-          monthlyStudyTimeRecords.push(this.sumStudyTime(result))
+          monthlyStudyTimeRecords.push((this.sumStudyTime(result) / 60))
         } else {
           calendar.push({ date: date })
         }
@@ -218,6 +253,14 @@ export default {
         totalTime = totalTimeRecords.reduce((previousValue, currentValue) => previousValue + currentValue)
       }
       return totalTime
+    },
+    getToDayStudyTimeRecords(date) {
+      this.today = date
+      // const result = this.studyTimeRecords.filter((records) =>
+      //     records.end_at?.includes(
+      //         `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}-${this.formatDay(date)}`
+      //     )
+      // )
     }
   }
 }
