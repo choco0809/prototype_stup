@@ -40,11 +40,15 @@
                       </thead>
                       <tbody>
                         <tr v-for="date in todayStudyTime" :key="date.id">
-                          <td>{{ date.start_at.slice(0,19) }}</td>
-                          <td>{{ date.end_at.slice(0,19) }}</td>
+                          <td class="border border-black">{{ date.start_at.slice(0,19) }}</td>
+                          <td class="border border-black">{{ date.end_at.slice(0,19) }}</td>
+                          <td>
+                            <button class="btn btn-warning" v-on:click=deleteStudyTimeRecord(date)>削除</button>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
+                    <button class="btn text-black my-2">編集</button>
                   </div>
                 </div>
               </div>
@@ -68,6 +72,7 @@ export default {
   },
   data() {
     return {
+      editButton: false,
       today: '',
       studyTimeRecords:[],
       calendarYear: this.getCurrentYear(),
@@ -124,15 +129,11 @@ export default {
       )
     },
     todayStudyTime() {
-      console.log("#todayStudyTime")
-      let arry = []
-      arry = this.studyTimeRecords.filter((record) =>
-          record.start_at.includes(
+      return  this.studyTimeRecords.filter((record) =>
+          record.end_at.includes(
               `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}-${this.formatDay(this.today)}`
           )
       )
-      console.log(arry)
-      return arry
     },
     calendarDates() {
       const calendar = []
@@ -256,11 +257,10 @@ export default {
     },
     getToDayStudyTimeRecords(date) {
       this.today = date
-      // const result = this.studyTimeRecords.filter((records) =>
-      //     records.end_at?.includes(
-      //         `${this.calendarYear}-${this.formatMonth(this.calendarMonth)}-${this.formatDay(date)}`
-      //     )
-      // )
+    },
+    deleteStudyTimeRecord(date) {
+      console.log("学習記録を削除する")
+      console.log(date)
     }
   }
 }
