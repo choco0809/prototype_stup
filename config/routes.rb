@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 
   namespace :api, {format: 'json'} do
     resources :calendar, only: %i[show]
+    resources :study_time_records, only: %i[destroy]
   end
 
   resources :sessions, only: %i[create destroy]
