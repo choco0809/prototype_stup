@@ -258,9 +258,45 @@ export default {
     getToDayStudyTimeRecords(date) {
       this.today = date
     },
+    fetchStudyTimes(){
+      fetch(`/api/calendar/${this.userId}.json`, {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': this.token()
+        },
+        credentials: 'same-origin'
+      })
+          .then((response) => {
+            return response.json()
+          })
+          .then((json) => {
+            json.forEach((r) => {
+              this.studyTimeRecords.push(r)
+            })
+          })
+          .catch((error) => {
+            console.warn(error)
+          })
+    },
     deleteStudyTimeRecord(date) {
-      console.log("学習記録を削除する")
-      console.log(date)
+      fetch(`/api/study_time_records/${date.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': this.token()
+        },
+        credentials: 'same-origin',
+        redirect: 'manual'
+      })
+          .then(() => {
+            this.studyTimeRecords = []
+            this.fetchStudyTimes()
+          })
+          .catch((error) => {
+            console.warn(error)
+          })
     }
   }
 }
